@@ -6,6 +6,8 @@ function App() {
   /* declara una constante que guardará el estado del usuario (sus credenciales) */
   const [user, setUser] = useState({});
 
+  const {REACT_APP_GOOGLE_CLIENT} = process.env;
+
   //lo que pasa cuando el usuario ingresa con su cuenta de Google
   function handleCallbackResponse(response) {
     //descencripta la respuesta de Google, que contiene los datos del usuario, usando jwt_decode
@@ -13,6 +15,7 @@ function App() {
 
     //guarda esas credenciales en la constante 'user' usando 'setUser' declarado en la línea 7
     setUser(userCredential);
+    console.log(userCredential);
 
     //esconde el botón de ingreso con Google
     document.getElementById("signInDiv").hidden = true;
@@ -32,7 +35,7 @@ function App() {
     /* global google */ // <-- este comentario le dice al programa que ignore cualquier instancia en la que google no este definido 
     google.accounts.id.initialize({
       //la id de cliente que Google nos otorgó (no debería de estar aquí, después la movemos)
-      client_id: "449803167411-6eitnr56qq5inf9c64t89q9772i2u5tj.apps.googleusercontent.com", 
+      client_id: REACT_APP_GOOGLE_CLIENT, 
 
       //cuando el usuario se registra (callnack) ejecuta esta funcion (handleCallbackResponse)
       callback: handleCallbackResponse
