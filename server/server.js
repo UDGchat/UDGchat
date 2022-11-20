@@ -2,6 +2,8 @@ import express from 'express'
 import cors from 'cors'
 import passport from 'passport'
 import expressSession from "express-session"
+import path from 'path'
+const __dirname = path.resolve(path.dirname('')); 
 
 import './oauth.js' //importa el código de oauth.js y lo ejecuta
 import dotenv from "dotenv"
@@ -9,6 +11,11 @@ dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 5000;
+
+app.use(cors())
+const corsOptions = {
+    origin: 'http://localhost:3000'
+}
 
 //declara una nueva sesión con express-session
 app.use(expressSession({
@@ -25,15 +32,14 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());   
 
-app.get("/auth/google", passport.authenticate("google", {
+app.get("/auth/google", cors(corsOptions), passport.authenticate("google", {
   scope: ["profile", "email"]
 }));
 
-app.get("/auth/google/redirect", passport.authenticate('google'), (req, res) => {
+app.get("/", passport.authenticate('google'), (req, res) => {
     if(!req.user)
         res.redirect("back")
-    res.send(req.user);
-    res.send("you reached the redirect URI")
+    res.redirect('http://localhost:3000/')
 });
 
 app.get("/auth/logout", (req, res, next) => {
@@ -46,7 +52,6 @@ app.get("/auth/logout", (req, res, next) => {
     });
 })
 
-app.use(cors())
 app.use(express.json()) //para ser capaces de enviar y recibir .json en las peticiones HTTP
 
 app.listen(port, () => {

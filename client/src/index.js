@@ -1,15 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import GoogleLogin from './GoogleLogin';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 //import reportWebVitals from './reportWebVitals';
+
+import Login from './login_page';
+import Main from './main_page';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <>
-    <App />
-    <GoogleLogin />
-  </>
+  <BrowserRouter>
+    <Routes>
+      <Route exact path='/' element={<Main />} />
+      <Route path='/login' element={<Login />} />
+    </Routes>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your App, pass a function

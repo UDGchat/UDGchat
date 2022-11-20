@@ -15,3 +15,14 @@ const connection = mongoose.connection
 connection.once('open', () =>
     console.log('Connection to MongoDB successful')
 )
+
+//crea un nuevo esquema para la colección 'user_info' de la base de datos
+const user_info = new mongoose.Schema({
+    googleId: String,
+    username: String,
+})
+
+//crea un nuevo modelo de la colección 'user_info' basado en el esquema del mismo nombre
+const User = mongoose.model('user_info', user_info)
+
+export default User
