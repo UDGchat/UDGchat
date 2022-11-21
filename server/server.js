@@ -39,6 +39,7 @@ app.get("/auth/google", cors(corsOptions), passport.authenticate("google", {
 app.get("/", passport.authenticate('google'), (req, res) => {
     if(!req.user)
         res.redirect("back")
+    res.redirect('http://localhost:3000/')
 });
 
 app.get("/auth/logout", (req, res, next) => {
