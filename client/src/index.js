@@ -10,8 +10,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
     <Routes>
-      <Route exact path='/' element={<Main />} />
+      <Route path='/home' element={<Main />} />
       <Route path='/login' element={<Login />} />
+      <Route path='*' element={<Main />} />
     </Routes>
   </BrowserRouter>
 );

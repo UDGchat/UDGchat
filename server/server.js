@@ -1,21 +1,21 @@
-import express from 'express'
-import cors from 'cors'
-import passport from 'passport'
-import expressSession from "express-session"
-import path from 'path'
-const __dirname = path.resolve(path.dirname('')); 
+const express = require('express')
+const passport = require('passport')
+const expressSession = require("express-session")
 
-import './oauth.js' //importa el código de oauth.js y lo ejecuta
-import dotenv from "dotenv"
-dotenv.config()
+require('dotenv').config()
+
+const MongoDBStore = require('connect-mongodb-session')(expressSession)
+const dbStore = new MongoDBStore({
+    uri: process.env.ATLAS_URI,
+    databaseName: 'Users',
+    collection: 'client_sessions'
+})
+dbStore.on('error', (err) => {
+    console.log('error with database store:', err)
+})
 
 const app = express()
 const port = process.env.PORT || 5000;
-
-app.use(cors())
-const corsOptions = {
-    origin: 'http://localhost:3000'
-}
 
 //declara una nueva sesión con express-session
 app.use(expressSession({
@@ -24,35 +24,18 @@ app.use(expressSession({
     saveUninitialized: false,
     cookie: {
         //secure: true,        //for https sites only
-        maxAge: 60*60*1000,    // milliseconds of a day
-    }
+        maxAge: 30*60*1000,    // milliseconds of a half hour
+    },
+    store: dbStore
 }));
 
-//inicializa el modulo passport y usa la sesión declarada antes
+//serializa los datos del usuario
 app.use(passport.initialize());
-app.use(passport.session());   
-
-app.get("/auth/google", cors(corsOptions), passport.authenticate("google", {
-  scope: ["profile", "email"]
-}));
-
-app.get("/", passport.authenticate('google'), (req, res) => {
-    if(!req.user)
-        res.redirect("back")
-    res.redirect('http://localhost:3000/')
-});
-
-app.get("/auth/logout", (req, res, next) => {
-    req.logout((err) => {
-        if (err) { return next(err) }
-        else if(!req.user){
-            res.send('<p>Connection terminated</p>')
-        }
-        else res.send('<p>Termination unsuccessful</p>')
-    });
-})
+app.use(passport.session())
 
 app.use(express.json()) //para ser capaces de enviar y recibir .json en las peticiones HTTP
+
+app.use(require('./routes.js'))
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
