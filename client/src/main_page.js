@@ -21,7 +21,8 @@ const Main = () => {
 
     return ( 
         <>
-            Bienvenido a UDGchat.com, {userData.username}
+            Bienvenido a UDGchat.com, {userData.username} - {userData.email}
+            <img src={userData.photo} alt='profile picture'></img>
         </>
      );
 }

@@ -28,7 +28,7 @@ router.get("/user", cors(corsOptions), (req, res) => {
 })
 
 router.get("/logout", (req, res, next) => {
-    req.session.destroy((err) => {
+    req.logout((err) => {
         if (err) { return next(err) }
     });
 })

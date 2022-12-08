@@ -17,6 +17,9 @@ connection.once('open', () =>
 const user_info = new mongoose.Schema({
     googleId: String,
     username: String,
+    email: String,
+    photo: String,
+    locale: String
 })
 
 //crea un nuevo modelo de la colección 'user_info' basado en el esquema del mismo nombre
