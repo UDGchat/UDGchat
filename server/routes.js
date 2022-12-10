@@ -1,36 +1,44 @@
 const express = require('express')
-const router = express.Router()
-const cors = require('cors')
 const passport = require('passport')
 
 require('./oauth.js')
-//importa el código de oauth.js y lo ejecuta
+const { sendMessage } = require('./dataHandler')
 
-const app = express()
+const router = express.Router()
 
-app.use(cors())
-const corsOptions = {
-    origin: `${process.env.SERVER_URL}:3000`,
-    credentials: true
-}
+router.post("/send", async (req, res) => {
+    const { groupID, subgroupID, message } = req.body
+    const author = req.user.username
 
-router.get("/auth/google", cors(corsOptions), passport.authenticate("google", {
+    const sentMessage = await sendMessage(author, groupID, subgroupID, message)
+    res.send(sentMessage)
+})
+
+router.get("/auth/google", passport.authenticate("google", {
     scope: ["profile", "email"]
   }));
   
 router.get("/", passport.authenticate('google'), (req, res) => {
-    res.redirect(`${process.env.SERVER_URL}:3000/home`)
+    res.redirect(`${process.env.CLIENT_ENDPOINT}/home`)
 });
 
-router.get("/user", cors(corsOptions), (req, res) => {
-    let currentSession =  { user: req.user, auth: req.isAuthenticated() }
-    res.send( currentSession )
+router.get("/user", (req, res) => {
+    try{
+        let currentSession =  { 
+            user: req.user, 
+            auth: req.isAuthenticated()
+        }
+        res.send( currentSession )
+    } catch(error) {
+        res.send(error)
+    }
 })
 
 router.get("/logout", (req, res, next) => {
     req.logout((err) => {
         if (err) { return next(err) }
-    });
+    })
+    res.redirect(`${process.env.CLIENT_ENDPOINT}/login`)
 })
 
 module.exports = router
